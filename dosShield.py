@@ -9,6 +9,7 @@
 from pyfiglet import figlet_format
 from colorama import Fore,Style,Back
 import time
+from scapy.all import *
 import subprocess
 
 #---------------------------------BANNER AND ADVISES-------------------------------------------------------------
@@ -31,13 +32,37 @@ print(Fore.WHITE + "[3] Blocked IP Dashboard")
 print(Fore.WHITE + "[4] Help (See what each choice does)")
 print(Fore.WHITE + "[5] Exit")
 print("-" * 65)
- 
-userChoice = input("--> ")
 
+#--------------USER CHOICE-----------------
+userChoice = input("--> ")
 #---------------------TRAFIC SNIFFER FUNCTION-------------------
 def traffficSniffer():
+   #banner
    print(Style.BRIGHT +Fore.WHITE + figlet_format("TRAFFIC SNIFFER",font="cybermedium".rstrip())+ Style.RESET_ALL,end="") 
    print("-"*65)
+
+   #logic
+   check_user_iface = ('Get-NetAdapter -Physical | Select-Object Name -ExpandProperty Name')
+   check_user_iface_result = subprocess.run(["powershell","-Command",check_user_iface],capture_output=True,text=True)
+
+   #CHECK WHICH SERVICE ARE YOU USING
+   if "Ethernet 3" in check_user_iface_result.stdout:
+     ifaceResult = "Ethernet 3"
+   elif "Ethernet 2" in check_user_iface_result.stdout:
+     ifaceResult= "Ethernet 2"
+   elif "Ethernet" in check_user_iface_result.stdout:
+     ifaceResult = "Ethernet"
+   
+   sniff(iface=ifaceResult, prn=lambda pkt: pkt.summary())
+
+
+
+   
+
+      
+   
+   
+
  
 if userChoice == "1":
     time.sleep(1)
