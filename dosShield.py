@@ -37,41 +37,56 @@ print("-" * 65)
 userChoice = input("--> ")
 #---------------------TRAFIC SNIFFER FUNCTION-------------------
 def traffficSniffer():
-   #banner
-   print(Style.BRIGHT +Fore.WHITE + figlet_format("TRAFFIC SNIFFER",font="cybermedium".rstrip())+ Style.RESET_ALL,end="") 
-   print("-"*65)
 
-   #logic
-   check_user_iface = ('Get-NetAdapter -Physical | Select-Object Name -ExpandProperty Name')
-   check_user_iface_result = subprocess.run(["powershell","-Command",check_user_iface],capture_output=True,text=True)
+    #banner
+    print(Style.BRIGHT +Fore.WHITE + figlet_format("TRAFFIC SNIFFER",font="cybermedium".rstrip())+ Style.RESET_ALL,end="") 
+    print("please wait while DoS attack patterns are being searched...")
+    print("-"*65)
+    time.sleep(1)
 
-   #CHECK WHICH SERVICE ARE YOU USING
-   if "Ethernet 3" in check_user_iface_result.stdout:
-     ifaceResult = "Ethernet 3"
-   elif "Ethernet 2" in check_user_iface_result.stdout:
-     ifaceResult= "Ethernet 2"
-   elif "Ethernet" in check_user_iface_result.stdout:
-     ifaceResult = "Ethernet"
-   
-   sniff(iface=ifaceResult, prn=lambda pkt: pkt.summary())
+    #logic
+    check_user_iface = ('Get-NetAdapter -Physical | Select-Object Name -ExpandProperty Name')
+    check_user_iface_result = subprocess.run(["powershell","-Command",check_user_iface],capture_output=True,text=True)
 
+    #CHECK WHICH SERVICE ARE YOU USING
+    if "Ethernet 3" in check_user_iface_result.stdout:
+        ifaceResult = "Ethernet 3"
+    elif "Ethernet 2" in check_user_iface_result.stdout:
+        ifaceResult = "Ethernet 2"
+    elif "Ethernet" in check_user_iface_result.stdout:
+        ifaceResult = "Ethernet"
+    # Wi-Fi / Wireless
+    elif "Wi-Fi" in check_user_iface_result.stdout:
+        ifaceResult = "Wi-Fi"
+    elif "WiFi" in check_user_iface_result.stdout:
+        ifaceResult = "WiFi"
+    elif "WLAN" in check_user_iface_result.stdout:
+        ifaceResult = "WLAN"
+    elif "Wireless" in check_user_iface_result.stdout:
+        ifaceResult = "Wireless"
 
+    # Bluetooth PAN
+    elif "Bluetooth" in check_user_iface_result.stdout:
+        ifaceResult = "Bluetooth"
 
-   
+    # USB-LAN y docks
+    elif "USB Ethernet" in check_user_iface_result.stdout:
+        ifaceResult = "USB Ethernet"
+    elif "USB 10/100/1000" in check_user_iface_result.stdout:
+        ifaceResult = "USB 10/100/1000"
+    elif "AX88179" in check_user_iface_result.stdout:
+        ifaceResult = "AX88179"
+    elif "DisplayLink" in check_user_iface_result.stdout:
+        ifaceResult = "DisplayLink"
 
-      
-   
-   
+    # Fallback genérico
+    else:
+        ifaceResult = check_user_iface_result.stdout.splitlines()[0]
 
- 
+    #EXECUTE SCAPY SNIFFER WHITH IFACERESULT
+    sniff(iface=ifaceResult, prn=lambda pkt: pkt.summary(), timeout=10)
+    print("\n Process ended")
+
 if userChoice == "1":
     time.sleep(1)
     traffficSniffer()
-
-
-
-
-
-
-
-
